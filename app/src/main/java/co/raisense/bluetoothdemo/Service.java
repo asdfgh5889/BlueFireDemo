@@ -551,6 +551,7 @@ public class Service
     }
 
     // BlueFire Event Handler
+    @SuppressLint("HandlerLeak")
     private Handler eventHandler = new Handler()
     {
         @Override
@@ -582,7 +583,7 @@ public class Service
         {
             Thread.sleep(Interval);
         }
-        catch(Exception ex) {}
+        catch(Exception ignored) {}
     }
 
 }
