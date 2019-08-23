@@ -9,20 +9,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static co.raisense.bluetoothdemo.Contants.ACCEL_PEDAL;
+import static co.raisense.bluetoothdemo.Contants.DATABASE_NAME;
+import static co.raisense.bluetoothdemo.Contants.DRIVER_TORQUE;
+import static co.raisense.bluetoothdemo.Contants.GPS;
+import static co.raisense.bluetoothdemo.Contants.PCT_LOAD;
+import static co.raisense.bluetoothdemo.Contants.PCT_TORQUE;
+import static co.raisense.bluetoothdemo.Contants.RPM;
+import static co.raisense.bluetoothdemo.Contants.SPEED;
+import static co.raisense.bluetoothdemo.Contants.TABLE_NAME;
+import static co.raisense.bluetoothdemo.Contants.TIME;
+import static co.raisense.bluetoothdemo.Contants.TORQUE_MODE;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "enginedata.db";
-    private static final String TABLE_NAME = "data";
-    private static final String TIME = "time";
-    private static final String RPM = "RPM";
-    private static final String SPEED = "Speed";
-    private static final String ACCEL_PEDAL = "AccelPedal";
-    private static final String PCT_LOAD = "PctLoad";
-    private static final String PCT_TORQUE = "PctTorque";
-    private static final String DRIVER_TORQUE = "DriverTorque";
-    private static final String TORQUE_MODE = "TorqueMode";
-    private static final String GPS = "gps";
+    SQLiteDatabase db = null;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -43,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void inserData(String time, String rpm, String speed, String accelpedal, String pctload, String pcttorque, String drivertorque, String torquemode, String gps){
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TIME, time);
         contentValues.put(RPM, rpm);
@@ -58,36 +61,37 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public int numOfRows(){
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
         return (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME);
     }
 
     public void deleteAllData(){
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_NAME);
         db.close();
     }
 
     @SuppressLint("Recycle")
-    public ArrayList<ArrayList<String>> getAllData(){
-        ArrayList<ArrayList<String>> array_list = new ArrayList<>();
+    public ArrayList<HashMap<String, String>> getAllData(){
+        ArrayList<HashMap<String, String>> array_list = new ArrayList<>();
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
         res.moveToFirst();
 
         while (!res.isAfterLast()){
-            ArrayList<String> row  = new ArrayList<>();
-            row.add(res.getString(res.getColumnIndex(TIME)));
-            row.add(res.getString(res.getColumnIndex(RPM)));
-            row.add(res.getString(res.getColumnIndex(SPEED)));
-            row.add(res.getString(res.getColumnIndex(ACCEL_PEDAL)));
-            row.add(res.getString(res.getColumnIndex(PCT_LOAD)));
-            row.add(res.getString(res.getColumnIndex(PCT_TORQUE)));
-            row.add(res.getString(res.getColumnIndex(DRIVER_TORQUE)));
-            row.add(res.getString(res.getColumnIndex(TORQUE_MODE)));
-            row.add(res.getString(res.getColumnIndex(GPS)));
-            array_list.add(row);
+            HashMap<String, String> data = new HashMap<>();
+            data.put(TIME, res.getString(res.getColumnIndex(TIME)));
+            data.put(RPM, res.getString(res.getColumnIndex(RPM)));
+            data.put(SPEED, res.getString(res.getColumnIndex(SPEED)));
+            data.put(ACCEL_PEDAL, res.getString(res.getColumnIndex(ACCEL_PEDAL)));
+            data.put(PCT_LOAD, res.getString(res.getColumnIndex(PCT_LOAD)));
+            data.put(PCT_TORQUE, res.getString(res.getColumnIndex(PCT_TORQUE)));
+            data.put(DRIVER_TORQUE, res.getString(res.getColumnIndex(DRIVER_TORQUE)));
+            data.put(TORQUE_MODE, res.getString(res.getColumnIndex(TORQUE_MODE)));
+            data.put(GPS, res.getString(res.getColumnIndex(GPS)));
+
+            array_list.add(data);
         }
         return array_list;
     }

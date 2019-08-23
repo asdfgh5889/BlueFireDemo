@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox checkUseJ1708;
     private CheckBox checkUseOBD2;
     private Button buttonConnect;
+    private Button btn_db;
 
     private TextView dataView1;
     private TextView dataView2;
@@ -476,6 +478,14 @@ public class MainActivity extends AppCompatActivity
         checkUseJ1708 = findViewById(R.id.checkUseJ1708);
         checkUseOBD2 = findViewById(R.id.checkUseOBD2);
         buttonConnect = findViewById(R.id.buttonConnect);
+        btn_db = findViewById(R.id.btn_db);
+
+        btn_db.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, InfoActivity.class));
+            }
+        });
 
         dataView1 = findViewById(R.id.dataLabel1);
         dataView2 = findViewById(R.id.dataLabel2);

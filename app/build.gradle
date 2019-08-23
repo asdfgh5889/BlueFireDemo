@@ -27,4 +27,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 //    implementation files('libs\\bluefire-api-v25.5.aar')
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+
+
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 }
