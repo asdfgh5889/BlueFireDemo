@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--  Adapter Layout    -->
+        <RelativeLayout
+            android:id="@+id/layoutAdapter"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <!--  Status    -->
+            <TextView
+                android:id="@+id/labelStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Status:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelStatus"
+                android:layout_alignBottom="@+id/labelStatus"
+                android:layout_marginLeft="80dp"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Adapter Checkboxes -->
+            <TextView
+                android:id="@+id/labelAdapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textStatus"
+                android:layout_marginTop="10dp"
+                android:text="Adapter:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <CheckBox
+                android:id="@+id/checkUseBLE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelAdapter"
+                android:layout_marginLeft="90dp"
+                android:onClick="onUseBLECheck"
+                android:text="BLE"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <CheckBox
+                android:id="@+id/checkUseBT21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelAdapter"
+                android:layout_alignLeft="@+id/checkUseBLE"
+                android:layout_marginLeft="80dp"
+                android:onClick="onUseBT21Check"
+                android:text="BT 2.1"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Reset Settings Button    -->
+            <Button
+                android:id="@+id/buttonReset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/checkUseBT21"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:onClick="onResetSettingsClick"
+                android:text="Reset"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Data Bus Checkboxez   -->
+            <TextView
+                android:id="@+id/labelDataBus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/labelAdapter"
+                android:layout_marginTop="20dp"
+                android:text="Data Bus:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <CheckBox
+                android:id="@+id/checkUseJ1939"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelDataBus"
+                android:layout_alignBottom="@+id/labelDataBus"
+                android:layout_alignLeft="@+id/checkUseBLE"
+                android:onClick="onUseJ1939Check"
+                android:text="J1939"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <CheckBox
+                android:id="@+id/checkUseJ1708"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelDataBus"
+                android:layout_alignBottom="@+id/labelDataBus"
+                android:layout_alignLeft="@+id/checkUseJ1939"
+                android:layout_marginLeft="90dp"
+                android:onClick="onUseJ1708Check"
+                android:text="J1708"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <CheckBox
+                android:id="@+id/checkUseOBD2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelDataBus"
+                android:layout_alignBottom="@+id/labelDataBus"
+                android:layout_alignLeft="@+id/checkUseJ1708"
+                android:layout_marginLeft="90dp"
+                android:onClick="onUseOBD2Check"
+                android:text="OBD2"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Separator    -->
+            <View
+                android:id="@+id/lineSeparator0"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@+id/checkUseOBD2"
+                android:background="@android:color/darker_gray"/>
+
+            <!--  Connect Button    -->
+            <Button
+                android:id="@+id/buttonConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/lineSeparator0"
+                android:layout_alignParentLeft="true"
+                android:onClick="onConnectClick"
+                android:text="Disconnect"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Firmware    -->
+            <TextView
+                android:id="@+id/labelFirmware"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/buttonConnect"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="0dp"
+                android:text="FW:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textFirmware"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelFirmware"
+                android:layout_alignBottom="@+id/labelFirmware"
+                android:layout_marginLeft="160dp"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Hardware    -->
+            <TextView
+                android:id="@+id/labelHardware"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/buttonConnect"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="120dp"
+                android:text="HW:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/textHardware"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/labelHardware"
+                android:layout_alignBottom="@+id/labelHardware"
+                android:layout_marginLeft="160dp"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Key State    -->
+            <TextView
+                android:id="@+id/textKeyState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/buttonConnect"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="0dp"
+                android:text="Key Off"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <!--  Heartbeat    -->
+            <TextView
+                android:id="@+id/labelHeartbeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/buttonConnect"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="60dp"
+                android:text="Heartbeat:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <TextView
+                android:id="@+id/textHeartbeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/buttonConnect"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="25dp"
+                android:text="0"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/dataLabel1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataLabel7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/dataText7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
