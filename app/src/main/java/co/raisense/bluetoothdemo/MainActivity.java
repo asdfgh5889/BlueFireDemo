@@ -80,6 +80,9 @@ public class MainActivity extends AppCompatActivity
     private TextView textView6;
     private TextView textView7;
 
+    private TextView textLatitude;
+    private TextView textLongitude;
+
     // App variables
     private boolean isConnecting;
     private boolean isReconnecting;
@@ -503,6 +506,9 @@ public class MainActivity extends AppCompatActivity
         textView6 = findViewById(R.id.dataText6);
         textView7 = findViewById(R.id.dataText7);
 
+        textLatitude = findViewById(R.id.locationLatText);
+        textLongitude = findViewById(R.id.locationLongText);
+
         // Clear the form
         clearForm();
 
@@ -582,12 +588,14 @@ public class MainActivity extends AppCompatActivity
                     startConnection();
                 else
                     checkBluetoothPermissions();
+
+                startELD();
             }
             else
             {
                 Thread.sleep(500); // allow eld to stop before disconnecting
-
                 disconnectAdapter();
+                stopELD();
             }
         } catch (Exception ex)
         {
@@ -1338,6 +1346,9 @@ public class MainActivity extends AppCompatActivity
                 // Only show the record once
                 currentRecordNo = blueFire.ELD.RecordNo();
 
+                // Show the ELD record
+                showELDRecord(currentRecordNo);
+
                 // Check for recording locally
                 if (blueFire.ELD.IsRecordingLocally() && !isUploading)
                 {
@@ -1356,35 +1367,20 @@ public class MainActivity extends AppCompatActivity
                         uploadELD();
                 }
             }
-
     }
 
-    private boolean editInterval(String intervalText, boolean align)
+    private void showELDRecord(int RecordNo)
     {
-        float interval = -1;
-        try
-        {
-            interval = Float.parseFloat(intervalText.trim());
+        RecordIds RecordId = RecordIds.forValue(blueFire.ELD.RecordId());
+
+        // ELD
+        if (RecordId == RecordIds.IFTA) {
+            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
+            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
+        } else {
+            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
+            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
         }
-
-        catch(Exception e){}
-
-        if (interval <= 0)
-        {
-            Toast.makeText(this, "Interval must be greater than 0.", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        if (align)
-        {
-            if (!blueFire.ELD.IsHourAligned(interval))
-            {
-                Toast.makeText(this, "Interval cannot be aligned.", Toast.LENGTH_LONG).show();
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private void uploadELD()
@@ -1415,6 +1411,79 @@ public class MainActivity extends AppCompatActivity
     {
         // Do something with the record data
         Log.d("Upload", String.valueOf(blueFire.ELD.RecordNo()) + "," + String.valueOf(blueFire.ELD.RecordId()));
+    }
+
+    // ELD Start Button
+    public void onStartELDClick(View view)
+    {
+        if (blueFire.ELD.IsStarted())
+            stopELD();
+        else
+            startELD();
+    }
+
+    private boolean editELDParms()
+    {
+        // Set ELD parameters
+        blueFire.ELD.DriverId = appDriverId; // not persistent by adapter
+
+        blueFire.ELD.ELDInterval = appELDInterval;
+        blueFire.ELD.AlignELD = appAlignELD;
+
+        blueFire.ELD.RecordIFTA = appRecordIFTA;
+        blueFire.ELD.IFTAInterval = appIFTAInterval;
+        blueFire.ELD.AlignIFTA = appAlignIFTA;
+
+        blueFire.ELD.RecordStats = appRecordStats;
+        blueFire.ELD.StatsInterval = appStatsInterval;
+        blueFire.ELD.AlignStats = appAlignStats;
+
+        return true;
+    }
+
+    private void startELD()
+    {
+        if (!blueFire.IsConnected())
+        {
+            Toast.makeText(this, "The adapter is not connected.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!blueFire.ELD.IsStreaming() && blueFire.ELD.RecordingMode() == RecordingModes.RecordNever)
+        {
+            Toast.makeText(this, "Please select either streaming or recording data.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        // if not started, edit ELD parameters
+        if (!blueFire.ELD.IsStarted())
+            if (!editELDParms())
+                return;
+
+        // Start recording
+        if (!blueFire.ELD.IsStarted())
+        {
+            // Set the time in the adapter.
+            // Note, must do this here so the custom record will have the correct date.
+            // If no custom record is to be sent, StartRecording will also set the time.
+            blueFire.SetTime();
+
+            blueFire.ELD.StartRecording();
+        }
+
+        // And start streaming
+        blueFire.ELD.StartStreaming();
+    }
+
+    private void stopELD()
+    {
+        if (!blueFire.IsConnected())
+            return;
+
+        // Stop streaming
+        blueFire.ELD.StopStreaming();
+
+        // Stop recording
+        blueFire.ELD.StopRecording();
     }
 
     // *********************************** End ELD *******************************************
