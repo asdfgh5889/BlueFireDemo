@@ -83,46 +83,21 @@ public class MainActivity extends AppCompatActivity
     private TextView textLatitude;
     private TextView textLongitude;
 
+    //Database
+    private DBHelper dbHelper;
+
     // App variables
     private boolean isConnecting;
     private boolean isReconnecting;
     private boolean isConnected;
     private boolean isConnectButton;
 
-    private int monitorPGN;
-    private int monitorPGN2;
-    private int monitorSource;
-    private int monitorInterval;
-    private byte[] monitorPGNData;
-    private boolean monitorRequest;
-    private boolean monitorBAMRTS;
-    private boolean isSendingPGN;
-    private boolean isMonitoringPGN;
-
-    private int faultCount;
-    private int faultIndex;
-    private boolean isRetrievingFaults;
-
-    private String faultSource = "";
-    private String faultSPN = "";
-    private String faultFMI = "";
-    private String faultOccurrence = "";
-    private String faultConversion = "";
-
     private int groupNo = 0;
-    private static final int maxGroupNo = 9;
-
-    private boolean IsRetrievingVINID;
 
     private RetrievalMethods retrievalMethod;
     private int retrievalInterval;
 
-    private static final int myCustomRecordId1 = 1;
-    private static final int myCustomRecordId2 = 2;
-
     private ConnectAdapterThread connectThread;
-
-    private GetTruckInfoThread getTruckInfoThread;
 
     private boolean isKeyOn;
 
@@ -466,6 +441,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeForm()
     {
+        dbHelper = new DBHelper(this);
         // Adapter layout
         layoutAdapter = (RelativeLayout) findViewById(R.id.layoutAdapter);
 
@@ -487,6 +463,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, InfoActivity.class));
+            }
+        });
+
+        findViewById(R.id.test_record).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbHelper.inserData("time", "rpm", "speed", "acc", "ocs", "", "", "", "");
             }
         });
 
@@ -532,10 +515,6 @@ public class MainActivity extends AppCompatActivity
 
         textHeartbeat.setText("0");
 
-        faultIndex = -1;
-
-        isRetrievingFaults = false;
-
         // Show user settings
         checkUseBT21.setChecked(appUseBT21);
         checkUseBLE.setChecked(appUseBLE);
@@ -566,7 +545,6 @@ public class MainActivity extends AppCompatActivity
         {
             if (isConnectButton)
             {
-
                 clearForm();
 
                 isConnecting = true;
@@ -1080,18 +1058,6 @@ public class MainActivity extends AppCompatActivity
         saveSettings();
     }
 
-    // Fault Button
-    public void onNextFaultClick(View view)
-    {
-        showNextFault();
-    }
-
-    // Reset Button
-    public void onResetFaultClick(View view)
-    {
-        blueFire.ResetFaults();
-    }
-
     // Reset Settings Button
     public void onResetSettingsClick(View view)
     {
@@ -1149,76 +1115,10 @@ public class MainActivity extends AppCompatActivity
         textHeartbeat.setText(String.valueOf(blueFire.HeartbeatCount()));
     }
 
-    private void stopTruckData()
-    {
-        if (!blueFire.IsConnected())
-            return;
-
-        if (getTruckInfoThread != null)
-            getTruckInfoThread.interrupt();
-
-        blueFire.StopDataRetrieval();
-    }
-
     private void clearAdapterData()
     {
-        IsRetrievingVINID = false;
-        isRetrievingFaults = false;
-
-        if (getTruckInfoThread != null)
-            getTruckInfoThread.interrupt();
-
-
+        boolean isRetrievingVINID = false;
         blueFire.StopDataRetrieval();
-    }
-
-    private class GetTruckInfoThread extends Thread
-    {
-        public void run()
-        {
-            // Get the Engine VIN and Component Id
-            final int nofRetries = 3;
-
-            int retries = nofRetries;
-            while (retries > 0)
-            {
-                blueFire.GetEngineVIN(RetrievalMethods.Synchronized);
-                if (Truck.EngineVIN != Const.NA)
-                    break;
-                retries--;
-                threadSleep(1); // allow other threads to execute
-            }
-
-            retries = nofRetries;
-            while (retries > 0)
-            {
-                blueFire.GetEngineId(RetrievalMethods.Synchronized);
-                if (Truck.EngineMake != Const.NA)
-                    break;
-                retries--;
-                threadSleep(1); // allow other threads to execute
-            }
-
-            retries = nofRetries;
-            while (retries > 0)
-            {
-                blueFire.GetTruckVIN(RetrievalMethods.Synchronized);
-                if (Truck.VIN != Const.NA)
-                    break;
-                retries--;
-                threadSleep(1); // allow other threads to execute
-            }
-
-            retries = nofRetries;
-            while (retries > 0)
-            {
-                blueFire.GetTruckId(RetrievalMethods.Synchronized);
-                if (Truck.Make != Const.NA)
-                    break;
-                retries--;
-                threadSleep(1); // allow other threads to execute
-            }
-        }
     }
 
     private void getTruckData()
@@ -1307,14 +1207,6 @@ public class MainActivity extends AppCompatActivity
 
                 break;
         }
-    }
-
-    private void showNextFault()
-    {
-        // Set to show next fault
-        faultIndex += 1;
-        if (faultIndex == faultCount) // wrap to the beginning
-            faultIndex = 0;
     }
 
     private void showStatus()

@@ -3,6 +3,7 @@ package co.raisense.bluetoothdemo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,5 +25,6 @@ public class InfoActivity extends AppCompatActivity {
         DataAdapter adapter = new DataAdapter(list);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 }

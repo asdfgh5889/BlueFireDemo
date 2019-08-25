@@ -72,26 +72,28 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Recycle")
-    public ArrayList<HashMap<String, String>> getAllData(){
+    public ArrayList<HashMap<String, String>> getAllData() {
         ArrayList<HashMap<String, String>> array_list = new ArrayList<>();
 
         db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
         res.moveToFirst();
 
-        while (!res.isAfterLast()){
-            HashMap<String, String> data = new HashMap<>();
-            data.put(TIME, res.getString(res.getColumnIndex(TIME)));
-            data.put(RPM, res.getString(res.getColumnIndex(RPM)));
-            data.put(SPEED, res.getString(res.getColumnIndex(SPEED)));
-            data.put(ACCEL_PEDAL, res.getString(res.getColumnIndex(ACCEL_PEDAL)));
-            data.put(PCT_LOAD, res.getString(res.getColumnIndex(PCT_LOAD)));
-            data.put(PCT_TORQUE, res.getString(res.getColumnIndex(PCT_TORQUE)));
-            data.put(DRIVER_TORQUE, res.getString(res.getColumnIndex(DRIVER_TORQUE)));
-            data.put(TORQUE_MODE, res.getString(res.getColumnIndex(TORQUE_MODE)));
-            data.put(GPS, res.getString(res.getColumnIndex(GPS)));
+        if (res.moveToFirst()) {
+            do {
+                HashMap<String, String> data = new HashMap<>();
+                data.put(TIME, res.getString(res.getColumnIndex(TIME)));
+                data.put(RPM, res.getString(res.getColumnIndex(RPM)));
+                data.put(SPEED, res.getString(res.getColumnIndex(SPEED)));
+                data.put(ACCEL_PEDAL, res.getString(res.getColumnIndex(ACCEL_PEDAL)));
+                data.put(PCT_LOAD, res.getString(res.getColumnIndex(PCT_LOAD)));
+                data.put(PCT_TORQUE, res.getString(res.getColumnIndex(PCT_TORQUE)));
+                data.put(DRIVER_TORQUE, res.getString(res.getColumnIndex(DRIVER_TORQUE)));
+                data.put(TORQUE_MODE, res.getString(res.getColumnIndex(TORQUE_MODE)));
+                data.put(GPS, res.getString(res.getColumnIndex(GPS)));
 
-            array_list.add(data);
+                array_list.add(data);
+            } while (res.moveToNext());
         }
         return array_list;
     }

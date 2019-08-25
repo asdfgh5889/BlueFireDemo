@@ -24,21 +24,21 @@ import static co.raisense.bluetoothdemo.Contants.TORQUE_MODE;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder>{
 
-    ArrayList<HashMap<String, String>> data;
+    private ArrayList<HashMap<String, String>> data;
 
     public DataAdapter(ArrayList<HashMap<String, String>> data) {
         this.data = data;
     }
 
-
+    @NonNull
     @Override
-    public DataViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list, viewGroup, false);
         return new DataViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(DataViewHolder dataViewHolder, int i) {
+    public void onBindViewHolder(@NonNull DataViewHolder dataViewHolder, int i) {
         dataViewHolder.setData(data.get(i));
     }
 
@@ -47,7 +47,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
         return data.size();
     }
 
-    public class DataViewHolder extends RecyclerView.ViewHolder{
+    class DataViewHolder extends RecyclerView.ViewHolder{
 
         private TextView time;
 
@@ -71,7 +71,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
         private TextView textView8;
         private TextView textView9;
 
-        public DataViewHolder(@NonNull View itemView) {
+        DataViewHolder(@NonNull View itemView) {
             super(itemView);
             init(itemView);
         }
@@ -99,7 +99,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
             textView9 = itemView.findViewById(R.id.txt_dataText9);
         }
 
-        public void setData(HashMap<String, String> data){
+        void setData(HashMap<String, String> data){
             time.setText(TIME);
 
             dataView1.setText("RPM");
