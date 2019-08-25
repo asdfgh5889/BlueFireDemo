@@ -47,6 +47,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import co.raisense.bluetoothdemo.callback.GetService;
+import co.raisense.bluetoothdemo.network.RetrofitInstance;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity
 {
     // Adapter Layout
@@ -85,6 +91,9 @@ public class MainActivity extends AppCompatActivity
 
     private TextView textLatitude;
     private TextView textLongitude;
+
+    //Retrofit
+    GetService service;
 
     //Database
     private DBHelper dbHelper;
@@ -191,6 +200,9 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Retrofit instance
+        service = RetrofitInstance.getRetrofit().create(GetService.class);
 
         // Set to kill the app when the user exits.
         // Note, this is recommended as it will ensure that all API resources such as
@@ -476,7 +488,30 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if(blueFire.IsConnected()){
+                    String data = dataView1.getText().toString()
+                            + " " + dataView2.getText().toString()
+                            + " " + dataView3.getText().toString()
+                            + " " + dataView4.getText().toString()
+                            + " " + dataView5.getText().toString()
+                            + " " + dataView6.getText().toString()
+                            + " " + dataView7.getText().toString()
+                            + " " + textLatitude.getText().toString() +
+                            " " + textLongitude.getText().toString();
+                    Call<String> call = service.sendData(data);
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            String resp = response.body();
+                            if(response.isSuccessful() && resp != null){
+                                Toast.makeText(MainActivity.this, "Data is sent! Response: \n" + resp, Toast.LENGTH_SHORT).show();
+                            }
+                        }
 
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, "There is problem with the internet!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }else{
                     Toast.makeText(MainActivity.this, "Please connect to an adapter!", Toast.LENGTH_SHORT).show();
                 }
