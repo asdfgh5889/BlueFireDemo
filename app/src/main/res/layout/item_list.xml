@@ -223,10 +223,9 @@
             android:id="@+id/txt_dataLabel8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
             android:layout_weight="1"
             android:padding="5dp"
-            />
+            android:textSize="20sp" />
         <TextView
             android:id="@+id/txt_dataText8"
             android:layout_width="wrap_content"

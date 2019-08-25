@@ -42,8 +42,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity
 
     //Database
     private DBHelper dbHelper;
+    private static final int MAX_AVAILABLE = 100;
+    private final Semaphore available = new Semaphore(MAX_AVAILABLE, true);
 
     // App variables
     private boolean isConnecting;
@@ -466,10 +470,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        findViewById(R.id.test_record).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.clean_record).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbHelper.inserData("time", "rpm", "speed", "acc", "ocs", "", "", "", "");
+                dbHelper.deleteAllData();
             }
         });
 
@@ -1105,6 +1109,30 @@ public class MainActivity extends AppCompatActivity
         // Show ELD data
         if ( blueFire.ELD.IsDataRetrieved())
             showELDData();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    available.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                dbHelper.inserData(
+                        Calendar.getInstance().getTime().toString(),
+                        dataView1.getText().toString(),
+                        dataView2.getText().toString(),
+                        dataView3.getText().toString(),
+                        dataView4.getText().toString(),
+                        dataView5.getText().toString(),
+                        dataView6.getText().toString(),
+                        dataView7.getText().toString(),
+                        textLatitude.getText().toString() +
+                                " " + textLongitude.getText().toString()
+                );
+                available.release();
+            }
+        }).start();
     }
 
     private void showHeartbeat()
@@ -1138,6 +1166,7 @@ public class MainActivity extends AppCompatActivity
                 textView5.setText("Pct Torque");
                 textView6.setText("Driver Torque");
                 textView7.setText("Torque Mode");
+
                 clearAdapterData();
                 blueFire.GetEngineData1(retrievalMethod, retrievalInterval); // RPM, Percent Torque, Driver Torque, Torque Mode
                 blueFire.GetEngineData2(retrievalMethod, retrievalInterval); // Percent Load, Accelerator Pedal Position

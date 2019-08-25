@@ -120,8 +120,10 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
             textView6.setText(data.get(DRIVER_TORQUE));
             textView7.setText(data.get(TORQUE_MODE));
             String[] gps_data = data.get(GPS).split(" ");
-            textView8.setText(gps_data[0]);
-            textView9.setText(gps_data[1]);
+            if (gps_data.length == 2) {
+                textView8.setText(gps_data[0]);
+                textView9.setText(gps_data[1]);
+            }
         }
     }
 }
