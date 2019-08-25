@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox checkUseOBD2;
     private Button buttonConnect;
     private Button btn_db;
+    private Button send_server;
 
     private TextView dataView1;
     private TextView dataView2;
@@ -462,11 +463,23 @@ public class MainActivity extends AppCompatActivity
         checkUseOBD2 = findViewById(R.id.checkUseOBD2);
         buttonConnect = findViewById(R.id.buttonConnect);
         btn_db = findViewById(R.id.btn_db);
+        send_server = findViewById(R.id.send_data);
 
         btn_db.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, InfoActivity.class));
+            }
+        });
+
+        send_server.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(blueFire.IsConnected()){
+
+                }else{
+                    Toast.makeText(MainActivity.this, "Please connect to an adapter!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
