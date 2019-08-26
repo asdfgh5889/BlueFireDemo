@@ -487,25 +487,16 @@ public class MainActivity extends AppCompatActivity
         send_server.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if(blueFire.IsConnected()){
-//                    String data = dataView1.getText().toString()
-//                            + " " + dataView2.getText().toString()
-//                            + " " + dataView3.getText().toString()
-//                            + " " + dataView4.getText().toString()
-//                            + " " + dataView5.getText().toString()
-//                            + " " + dataView6.getText().toString()
-//                            + " " + dataView7.getText().toString()
-//                            + " " + textLatitude.getText().toString() +
-//                            " " + textLongitude.getText().toString();
-
-                String data = "216516"
-                        + " " + "654684"
-                        + " " + "846"
-                        + " " + "651313"
-                        + " " + "56464"
-                        + " " + "86468462"
-                        + " " + "2130"
-                        + " " + "212131";
+                if(blueFire.IsConnected()){
+                    String data = dataView1.getText().toString()
+                            + " " + dataView2.getText().toString()
+                            + " " + dataView3.getText().toString()
+                            + " " + dataView4.getText().toString()
+                            + " " + dataView5.getText().toString()
+                            + " " + dataView6.getText().toString()
+                            + " " + dataView7.getText().toString()
+                            + " " + textLatitude.getText().toString() +
+                            " " + textLongitude.getText().toString();
 
                     Call<String> call = service.sendData(data);
                     call.enqueue(new Callback<String>() {
@@ -522,9 +513,9 @@ public class MainActivity extends AppCompatActivity
                             Toast.makeText(MainActivity.this, "There is problem with the internet!", Toast.LENGTH_SHORT).show();
                         }
                     });
-//                }else{
-//                    Toast.makeText(MainActivity.this, "Please connect to an adapter!", Toast.LENGTH_SHORT).show();
-//                }
+                }else{
+                    Toast.makeText(MainActivity.this, "Please connect to an adapter!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
