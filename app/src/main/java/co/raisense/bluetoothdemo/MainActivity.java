@@ -558,13 +558,14 @@ public class MainActivity extends AppCompatActivity
                             + " " + dataView7.getText().toString()
                             + " " + textLatitude.getText().toString() +
                             " " + textLongitude.getText().toString();
+
                     Call<String> call = service.sendData(data);
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             String resp = response.body();
                             if(response.isSuccessful() && resp != null){
-                                Toast.makeText(MainActivity.this, "Data is sent! Response: \n" + resp, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Data are sent! Response: \n" + resp, Toast.LENGTH_SHORT).show();
                             }
                         }
 
