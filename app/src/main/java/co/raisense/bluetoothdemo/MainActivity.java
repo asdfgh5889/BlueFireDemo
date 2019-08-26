@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +39,12 @@ import com.bluefire.api.RecordingModes;
 import com.bluefire.api.RetrievalMethods;
 import com.bluefire.api.SleepModes;
 import com.bluefire.api.Truck;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -55,6 +63,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
 {
+    private static final int LOCATION_PERMISSION_REQUEST = 5889;
     // Adapter Layout
     private RelativeLayout layoutAdapter;
 
@@ -195,12 +204,64 @@ public class MainActivity extends AppCompatActivity
     private boolean isUploading;
     private int currentRecordNo = -1;
 
+    FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Location
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this, "This app need location permissions!", Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST);
+            }
+        }
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(20 * 1000);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        textLongitude.setText(String.valueOf(location.getLongitude()));
+                        textLatitude.setText(String.valueOf(location.getLatitude()));
+                    }
+                }
+            }
+        };
+
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    textLongitude.setText(String.valueOf(location.getLongitude()));
+                    textLatitude.setText(String.valueOf(location.getLatitude()));
+                }
+            }
+        });
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         //Retrofit instance
         service = RetrofitInstance.getRetrofit().create(GetService.class);
 
@@ -525,21 +586,21 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        dataView1 = findViewById(R.id.dataLabel1);
-        dataView2 = findViewById(R.id.dataLabel2);
-        dataView3 = findViewById(R.id.dataLabel3);
-        dataView4 = findViewById(R.id.dataLabel4);
-        dataView5 = findViewById(R.id.dataLabel5);
-        dataView6 = findViewById(R.id.dataLabel6);
-        dataView7 = findViewById(R.id.dataLabel7);
+        textView1 = findViewById(R.id.dataLabel1);
+        textView2 = findViewById(R.id.dataLabel2);
+        textView3 = findViewById(R.id.dataLabel3);
+        textView4 = findViewById(R.id.dataLabel4);
+        textView5 = findViewById(R.id.dataLabel5);
+        textView6 = findViewById(R.id.dataLabel6);
+        textView7 = findViewById(R.id.dataLabel7);
 
-        textView1 = findViewById(R.id.dataText1);
-        textView2 = findViewById(R.id.dataText2);
-        textView3 = findViewById(R.id.dataText3);
-        textView4 = findViewById(R.id.dataText4);
-        textView5 = findViewById(R.id.dataText5);
-        textView6 = findViewById(R.id.dataText6);
-        textView7 = findViewById(R.id.dataText7);
+        dataView1 = findViewById(R.id.dataText1);
+        dataView2 = findViewById(R.id.dataText2);
+        dataView3 = findViewById(R.id.dataText3);
+        dataView4 = findViewById(R.id.dataText4);
+        dataView5 = findViewById(R.id.dataText5);
+        dataView6 = findViewById(R.id.dataText6);
+        dataView7 = findViewById(R.id.dataText7);
 
         textLatitude = findViewById(R.id.locationLatText);
         textLongitude = findViewById(R.id.locationLongText);
@@ -717,6 +778,15 @@ public class MainActivity extends AppCompatActivity
             adapterDisconnected();
 
             Toast.makeText(this, "You need to allow Location Access to use the BLE Adapter.", Toast.LENGTH_LONG).show();
+        }
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(this, "You need to allow Location Access.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -1343,13 +1413,13 @@ public class MainActivity extends AppCompatActivity
         RecordIds RecordId = RecordIds.forValue(blueFire.ELD.RecordId());
 
         // ELD
-        if (RecordId == RecordIds.IFTA) {
-            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
-            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
-        } else {
-            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
-            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
-        }
+//        if (RecordId == RecordIds.IFTA) {
+//            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
+//            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
+//        } else {
+//            textLatitude.setText(formatDecimal(blueFire.ELD.Latitude(), 7));
+//            textLongitude.setText(formatDecimal(blueFire.ELD.Longitude(), 7));
+//        }
     }
 
     private void uploadELD()

@@ -100,7 +100,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
         }
 
         void setData(HashMap<String, String> data){
-            time.setText(TIME);
+            time.setText(data.get(TIME));
 
             dataView1.setText("RPM");
             dataView2.setText("Speed");
